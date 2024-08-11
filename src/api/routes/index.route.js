@@ -1,11 +1,9 @@
-const express=require("express")
-const authRouter =require("./auth.routes")
-const indexRouter=express.Router();
+const express = require("express");
+const authRouter = require("./auth.routes");
+const expenseRouter = require("./expense.route");
+const indexRouter = express.Router();
 
+indexRouter.use("/auth", authRouter);
+indexRouter.use("/expense", expenseRouter);
 
-
-
-indexRouter.use("/auth",authRouter)
-
-
-module.exports=indexRouter
+module.exports = indexRouter;

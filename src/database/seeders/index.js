@@ -1,0 +1,2 @@
+require("./seedIncomeCategories");
+require("./seederExpenseCategories");
