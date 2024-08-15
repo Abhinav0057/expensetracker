@@ -1,4 +1,4 @@
-const User = require("../../database/model/user.model");
+const { User, FriendRequest } = require("../../database/model/user.model");
 const bcrypt = require("bcryptjs");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
@@ -78,24 +78,6 @@ const signinUser = async (req, res, next) => {
 
 const getMe = async (req, res, next) => {
   try {
-    // // Extract the token from the Authorization header
-    // const token = req.header("Authorization")?.replace("Bearer ", "");
-    // console.log(token);
-
-    // if (!token) {
-    //   return res.status(401).send("Access Denied: No Token Provided");
-    // }
-
-    // // Verify the token
-    // const verified = jwt.verify(token, "process.env.JWT_SECRET_KEY");
-    // if (verified) {
-    //   return res.json({
-    //     message: "Successfully Verified",
-    //     user: verified,
-    //   });
-    // } else {
-    //   return res.status(401).send("Access Denied: Token Verification Failed");
-    // }
     console.log(req.user);
     return res.status(200).send(req.user);
   } catch (error) {
@@ -103,4 +85,48 @@ const getMe = async (req, res, next) => {
   }
 };
 
-module.exports = { getAllUser, signupUser, signinUser, getMe };
+const sendFriendRequest = async (req, res, next) => {
+  let { senderId, receiverId } = req.body;
+  const existinrRequest = await FriendRequest.findOne({
+    sender: senderId,
+    receiver: receiverId,
+    status: "pending",
+    is_deleted: false,
+  });
+  // note: rejectd condn herya chaina easma
+  if (existinrRequest) {
+    return res.status(401).send("Request already sent");
+  }
+  const friendRequest = new FriendRequest({
+    sender: senderId,
+    receiver: receiverId,
+  });
+  await friendRequest.save();
+  return res
+    .status(201)
+    .send({ message: "Friend Request sent", data: friendRequest });
+};
+
+const respondToFriendRequest = async (req, res, next) => {
+  let { requestId, status } = req.body;
+  const friendRequest = FriendRequest.findById(findById);
+  if (!friendRequest) {
+    res.status(400).send({ message: "Cannot find request" });
+  }
+  if (friendRequest.status !== "pending") {
+    res.status(400).send({ message: "Request already processed" });
+  }
+  friendRequest.status = status;
+  await friendRequest.save();
+  if (status === "accepted") {
+    await User.findByIdAndUpdate(friendRequest.sender, {
+      $push: { friends: friendRequest.receiver },
+    });
+    await User.findByIdAndUpdate(friendRequest.receiver, {
+      $push: { friends: friendRequest.sender },
+    });
+  }
+  return res.status(201).send({message:`Friend request ${status}`})
+};
+
+module.exports = { getAllUser, signupUser, signinUser, getMe,sendFriendRequest,respondToFriendRequest };
