@@ -132,7 +132,7 @@ const createSplitExpense = async (req, res, next) => {
     return res.status(500).json({ message: error.message });
   }
 };
-getSplitExpenseById: async (req, res) => {
+const getSplitExpenseById= async (req, res,next) => {
   try {
     const { id } = req.params;
 
@@ -150,8 +150,8 @@ getSplitExpenseById: async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-},
-updateSplitExpense: async (req, res) => {
+};
+const updateSplitExpense= async (req, res,next) => {
   try {
     const { id } = req.params;
     const { expense, payer, participants, amount, split_amount, settled, settled_by } = req.body;
@@ -207,9 +207,8 @@ updateSplitExpense: async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-},
+};
 
-module.exports = createSplitExpense;
 
 
 module.exports = { getAllExpenseCategory, getMyExpenses, postMyExpenses };
