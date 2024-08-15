@@ -23,6 +23,7 @@ const expenseSchema = new Schema({
     required: true,
     ref: "User",
   },
+  participants: [{ type: mongoose.Types.ObjectId, ref: "User" }],
   created_at: {
     type: Date,
     required: true,
@@ -44,14 +45,31 @@ const expenseSchema = new Schema({
   },
 });
 
+const splitExpenseSchema = new Schema({
+  expense: { type: mongoose.Types.ObjectId, ref: "Expense", required: true },
+  payer: { type: mongoose.Types.ObjectId, ref: "User", required: true },
+  participants: [
+    { type: mongoose.Types.ObjectId, ref: "User", required: true },
+  ],
+  amount: { type: Number, required: true },
+  split_amount: { type: Number, required: true },
+  settled: { type: Boolean, default: false },
+  settled_by: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+});
+
+//   make schemem to models
+
 const ExpenseCategory = mongoose.model(
   "ExpenseCategory",
   expenseCategorySchema
 );
 const Expense = mongoose.model("Expense", expenseSchema);
 
+const SplitExpense = mongoose.model("SplitExpense", splitExpenseSchema);
+
 // Export the models
 module.exports = {
   ExpenseCategory,
   Expense,
+  SplitExpense,
 };
