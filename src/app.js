@@ -16,9 +16,10 @@ app.use(express.json());
 app.use("/api", indexRouter);
 
 app.use("*", (req, res, next) => {
-  res.status(404).send("Page not found");
+  res.status(404).send("Page not found1");
 });
 
 //define port
-
-app.listen(3000, () => console.log("app started at 3000..."));
+let port = process.env.PORT || 3000;
+console.log(port);
+app.listen(port, () => console.log("app started at " + port));
