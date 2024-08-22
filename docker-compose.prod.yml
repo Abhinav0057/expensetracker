@@ -1,0 +1,9 @@
+services: 
+  expense-image:
+    build:
+      context: .
+      arge: 
+        NODE_ENV: development
+    environment:
+      NODE_ENV: development
+    command: npm run start

@@ -8,7 +8,13 @@ WORKDIR /application
 COPY package.json .
 
 #  inatall dependencies
-RUN npm install
+ARG NODE_ENV
+RUN if [ "$NODE_ENV" = "development" ];\
+        then npm install;\
+        else npm install --only=production;\
+        fi
+
+# RUN npm install 
 
 #  copy code to our docer container
 
@@ -21,5 +27,5 @@ EXPOSE $PORT
 
 
 # CMD ["node","src/app.js"]
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]
 
